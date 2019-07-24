@@ -1,16 +1,10 @@
-FROM debian:latest
+FROM ubuntu:latest
+MAINTAINER Justin Roysdon
+# Original concept taken from Scott Lowe https://github.com/scottslowe/dockerfiles and aliustaoglu/firefox
+# On Linux, docker run --rm -e DISPLAY=yourIPAddressHere:0 -v /tmp/.X11-unix:/tmp/.X11-unix -it firefox-ubuntu
+# On MacOS, you need to install XQuartz.org, then run the docker run above
 
-RUN apt-get update && apt-get -y install firefox-esr
+RUN apt-get -y update && apt-get -y install firefox --no-install-recommends && \
+    rm -rf /var/lib/apt/lists*
 
-RUN export uid=1000 gid=1000 && \
-    mkdir -p /home/slowe && \
-    echo "slowe:x:${uid}:${gid}:Scott Lowe,,,:/home/slowe:/bin/bash" >> /etc/passwd && \
-    echo "slowe:x:${uid}:" >> /etc/group && \
-    mkdir -p /etc/sudoers.d && \
-    echo "slowe ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/slowe && \
-    chmod 0440 /etc/sudoers.d/slowe && \
-    chown ${uid}:${gid} -R /home/slowe
-
-USER slowe
-ENV HOME /home/slowe
-CMD /usr/bin/firefox
+ENTRYPOINT [ "/usr/bin/firefox" ]
